@@ -1,4 +1,5 @@
 #pragma once
+#include "concepts.h"
 #include "figure.h"
 #include <memory>
 #include <cmath>

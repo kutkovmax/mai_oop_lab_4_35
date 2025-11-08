@@ -1,28 +1,10 @@
 #pragma once
+#include "concepts.h"
 #include <memory>
 #include <iostream>
 #include <concepts>
 #include <type_traits>
 #include <stdexcept>
-
-// --- concept-проверки ---
-// Объект должен поддерживать operator double()
-template <class X>
-concept HasArea = requires(X a) {
-    { double(a) } -> std::convertible_to<double>;
-};
-
-// Объект должен иметь метод center() возвращающий Point<T>
-template <class X>
-concept HasCenter = requires(X a) {
-    { a.center() };
-};
-
-// Объект должен быть печатаемым через <<
-template <class X>
-concept Printable = requires(std::ostream& os, X a) {
-    { os << a } -> std::same_as<std::ostream&>;
-};
 
 // --- Шаблон динамического массива ---
 template <class T>

@@ -1,11 +1,9 @@
 #pragma once
+#include "concepts.h"
 #include <concepts>
 #include <type_traits>
 #include <iostream>
-#include <cmath> // ✅ нужно для std::fabs
-
-template <typename T>
-concept Scalar = std::is_arithmetic_v<T>;
+#include <cmath> 
 
 template <Scalar T>
 struct Point {

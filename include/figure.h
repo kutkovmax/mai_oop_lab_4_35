@@ -1,4 +1,5 @@
 #pragma once
+#include "concepts.h"
 #include "point.h"
 #include <memory>
 #include <iostream>
