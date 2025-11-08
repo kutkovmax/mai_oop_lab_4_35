@@ -20,7 +20,6 @@ public:
           p3(std::make_unique<Point<T>>()),
           p4(std::make_unique<Point<T>>()) {}
 
-    // ✅ Конструктор из 4 точек
     Rhombus(const Point<T>& a, const Point<T>& b, const Point<T>& c, const Point<T>& d)
         : p1(std::make_unique<Point<T>>(a)),
           p2(std::make_unique<Point<T>>(b)),
