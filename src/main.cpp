@@ -57,6 +57,6 @@ int main() {
         }
     }
 
-    std::cout << "bye";
+    std::cout << "bye\n";
     return 0;
 }
