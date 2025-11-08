@@ -2,53 +2,70 @@
 #include "figure.h"
 #include <memory>
 #include <cmath>
+#include <iostream>
 
 template <Scalar T>
 class Trapezoid : public Figure<T> {
 private:
-    std::unique_ptr<Point<T>> p1, p2, p3, p4;
+    std::unique_ptr<Point<T>> a, b, c, d;
 
-    static double tri_area(const Point<T>& a, const Point<T>& b, const Point<T>& c) {
-        return std::abs((a.x*(b.y - c.y) + b.x*(c.y - a.y) + c.x*(a.y - b.y)) / 2.0);
+    static double tri_area(const Point<T>& p1, const Point<T>& p2, const Point<T>& p3) {
+        return std::abs((p1.x * (p2.y - p3.y) +
+                         p2.x * (p3.y - p1.y) +
+                         p3.x * (p1.y - p2.y)) / 2.0);
     }
 
 public:
     Trapezoid()
-        : p1(std::make_unique<Point<T>>()),
-          p2(std::make_unique<Point<T>>()),
-          p3(std::make_unique<Point<T>>()),
-          p4(std::make_unique<Point<T>>()) {}
+        : a(std::make_unique<Point<T>>()),
+          b(std::make_unique<Point<T>>()),
+          c(std::make_unique<Point<T>>()),
+          d(std::make_unique<Point<T>>()) {}
+
+    Trapezoid(const Point<T>& p1, const Point<T>& p2,
+              const Point<T>& p3, const Point<T>& p4)
+        : a(std::make_unique<Point<T>>(p1)),
+          b(std::make_unique<Point<T>>(p2)),
+          c(std::make_unique<Point<T>>(p3)),
+          d(std::make_unique<Point<T>>(p4)) {}
 
     Trapezoid(const Trapezoid& other) {
-        p1 = std::make_unique<Point<T>>(*other.p1);
-        p2 = std::make_unique<Point<T>>(*other.p2);
-        p3 = std::make_unique<Point<T>>(*other.p3);
-        p4 = std::make_unique<Point<T>>(*other.p4);
+        a = std::make_unique<Point<T>>(*other.a);
+        b = std::make_unique<Point<T>>(*other.b);
+        c = std::make_unique<Point<T>>(*other.c);
+        d = std::make_unique<Point<T>>(*other.d);
     }
+
     Trapezoid& operator=(const Trapezoid& other) {
         if (this == &other) return *this;
-        p1 = std::make_unique<Point<T>>(*other.p1);
-        p2 = std::make_unique<Point<T>>(*other.p2);
-        p3 = std::make_unique<Point<T>>(*other.p3);
-        p4 = std::make_unique<Point<T>>(*other.p4);
+        a = std::make_unique<Point<T>>(*other.a);
+        b = std::make_unique<Point<T>>(*other.b);
+        c = std::make_unique<Point<T>>(*other.c);
+        d = std::make_unique<Point<T>>(*other.d);
         return *this;
     }
 
+    Trapezoid(Trapezoid&&) noexcept = default;
+    Trapezoid& operator=(Trapezoid&&) noexcept = default;
+
     void read(std::istream& is) override {
-        is >> p1->x >> p1->y >> p2->x >> p2->y >> p3->x >> p3->y >> p4->x >> p4->y;
+        is >> a->x >> a->y >> b->x >> b->y >> c->x >> c->y >> d->x >> d->y;
     }
 
     void print(std::ostream& os) const override {
-        os << "Trapezoid: " << *p1 << " " << *p2 << " " << *p3 << " " << *p4;
+        os << "Trapezoid: " << *a << " " << *b << " " << *c << " " << *d;
     }
 
     Point<T> center() const override {
-        Point<T> sum = *p1 + *p2 + *p3 + *p4;
-        return sum / 4.0;
+        return (*a + *b + *c + *d) / 4.0;
     }
 
     double area() const override {
-        return tri_area(*p1, *p2, *p3) + tri_area(*p1, *p3, *p4);
+        return tri_area(*a, *b, *c) + tri_area(*a, *c, *d);
+    }
+
+    bool operator==(const Trapezoid& other) const {
+        return *a == *other.a && *b == *other.b && *c == *other.c && *d == *other.d;
     }
 
     std::unique_ptr<Figure<T>> clone() const override {

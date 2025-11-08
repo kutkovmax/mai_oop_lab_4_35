@@ -1,71 +1,65 @@
+// src/main.cpp
 #include <iostream>
 #include <memory>
-#include <sstream>
-#include "figure.h"
-#include "rectangle.h"
-#include "trapezoid.h"
-#include "rhombus.h"
 #include "figure_array.h"
-
-using T = double;
+#include "rectangle.h"
+#include "rhombus.h"
+#include "trapezoid.h"
 
 int main() {
-    std::cout << "Figures program (Variant 35: Rectangle, Trapezoid, Rhombus)\n";
-    std::cout << "Input format:\n";
-    std::cout << "N\n";
-    std::cout << "<type> <8 numbers...>\n";
-    std::cout << "type: 1=Rectangle 2=Trapezoid 3=Rhombus\n";
-    std::cout << "Each figure: 8 numbers: x1 y1 x2 y2 x3 y3 x4 y4\n\n";
+    using D = double;
+    Array<std::shared_ptr<Figure<D>>> figures;
 
-    int n;
-    if (!(std::cin >> n)) {
-        std::cerr << "Bad input\n";
-        return 1;
-    }
+    std::cout << "=== Geometric Figure Manager ===\n";
+    std::cout << "Available shapes: Rectangle, Rhombus, Trapezoid\n";
 
-    Array<std::shared_ptr<Figure<T>>> arr;
+    int choice;
+    while (true) {
+        std::cout << "\n1. Add Rectangle\n";
+        std::cout << "2. Add Rhombus\n";
+        std::cout << "3. Add Trapezoid\n";
+        std::cout << "4. Print all\n";
+        std::cout << "5. Print centers\n";
+        std::cout << "6. Total area\n";
+        std::cout << "7. Erase by index\n";
+        std::cout << "0. Exit\n> ";
+        std::cin >> choice;
 
-    for (int i = 0; i < n; ++i) {
-        int type;
-        std::cin >> type;
-        if (!std::cin) {
-            std::cerr << "Bad input\n";
-            return 1;
-        }
+        if (!std::cin || choice == 0) break;
 
-        if (type == 1) {
-            auto r = std::make_shared<Rectangle<T>>();
+        if (choice == 1) {
+            auto r = std::make_shared<Rectangle<D>>();
+            std::cout << "Enter 4 points (x y x y x y x y): ";
             std::cin >> *r;
-            arr.push_back(r);
-        } else if (type == 2) {
-            auto t = std::make_shared<Trapezoid<T>>();
-            std::cin >> *t;
-            arr.push_back(t);
-        } else if (type == 3) {
-            auto rh = std::make_shared<Rhombus<T>>();
+            figures.push_back(r);
+        } else if (choice == 2) {
+            auto rh = std::make_shared<Rhombus<D>>();
+            std::cout << "Enter 4 points (x y x y x y x y): ";
             std::cin >> *rh;
-            arr.push_back(rh);
-        } else {
-            std::cerr << "Unknown type " << type << "\n";
-            --i;
-            continue;
+            figures.push_back(rh);
+        } else if (choice == 3) {
+            auto t = std::make_shared<Trapezoid<D>>();
+            std::cout << "Enter 4 points (x y x y x y x y): ";
+            std::cin >> *t;
+            figures.push_back(t);
+        } else if (choice == 4) {
+            figures.printAll();
+        } else if (choice == 5) {
+            figures.printCenters();
+        } else if (choice == 6) {
+            std::cout << "Total area = " << figures.totalArea() << "\n";
+        } else if (choice == 7) {
+            size_t idx;
+            std::cout << "Enter index to erase: ";
+            std::cin >> idx;
+            try {
+                figures.erase(idx);
+            } catch (const std::exception& e) {
+                std::cerr << e.what() << "\n";
+            }
         }
     }
 
-    std::cout << "\nAll figures:\n";
-    arr.printAll();
-
-    std::cout << "\nCenters:\n";
-    arr.printCenters();
-
-    std::cout << "\nTotal area: " << arr.totalArea() << "\n";
-
-    // demonstrate erasing 0 if exists
-    if (arr.size() > 0) {
-        arr.erase(0);
-        std::cout << "\nAfter erase index 0:\n";
-        arr.printAll();
-    }
-
+    std::cout << "Exiting...\n";
     return 0;
 }

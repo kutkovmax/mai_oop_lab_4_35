@@ -8,10 +8,8 @@ class Rhombus : public Figure<T> {
 private:
     std::unique_ptr<Point<T>> p1, p2, p3, p4;
 
-    static double dist2(const Point<T>& a, const Point<T>& b) {
-        double dx = double(a.x - b.x);
-        double dy = double(a.y - b.y);
-        return dx*dx + dy*dy;
+    static double tri_area(const Point<T>& a, const Point<T>& b, const Point<T>& c) {
+        return std::abs((a.x*(b.y - c.y) + b.x*(c.y - a.y) + c.x*(a.y - b.y)) / 2.0);
     }
 
 public:
@@ -21,18 +19,25 @@ public:
           p3(std::make_unique<Point<T>>()),
           p4(std::make_unique<Point<T>>()) {}
 
-    Rhombus(const Rhombus& other) {
-        p1 = std::make_unique<Point<T>>(*other.p1);
-        p2 = std::make_unique<Point<T>>(*other.p2);
-        p3 = std::make_unique<Point<T>>(*other.p3);
-        p4 = std::make_unique<Point<T>>(*other.p4);
-    }
+    // ✅ Конструктор из 4 точек
+    Rhombus(const Point<T>& a, const Point<T>& b, const Point<T>& c, const Point<T>& d)
+        : p1(std::make_unique<Point<T>>(a)),
+          p2(std::make_unique<Point<T>>(b)),
+          p3(std::make_unique<Point<T>>(c)),
+          p4(std::make_unique<Point<T>>(d)) {}
+
+    Rhombus(const Rhombus& other)
+        : p1(std::make_unique<Point<T>>(*other.p1)),
+          p2(std::make_unique<Point<T>>(*other.p2)),
+          p3(std::make_unique<Point<T>>(*other.p3)),
+          p4(std::make_unique<Point<T>>(*other.p4)) {}
+
     Rhombus& operator=(const Rhombus& other) {
         if (this == &other) return *this;
-        p1 = std::make_unique<Point<T>>(*other.p1);
-        p2 = std::make_unique<Point<T>>(*other.p2);
-        p3 = std::make_unique<Point<T>>(*other.p3);
-        p4 = std::make_unique<Point<T>>(*other.p4);
+        *p1 = *other.p1;
+        *p2 = *other.p2;
+        *p3 = *other.p3;
+        *p4 = *other.p4;
         return *this;
     }
 
@@ -50,19 +55,20 @@ public:
     }
 
     double area() const override {
-        // area = (d1 * d2) / 2, diagonals between p1-p3 and p2-p4
-        double d1 = std::sqrt(dist2(*p1, *p3));
-        double d2 = std::sqrt(dist2(*p2, *p4));
-        return (d1 * d2) / 2.0;
+        return tri_area(*p1, *p2, *p3) + tri_area(*p1, *p3, *p4);
     }
 
     std::unique_ptr<Figure<T>> clone() const override {
         return std::make_unique<Rhombus<T>>(*this);
     }
+
+    bool operator==(const Rhombus<T>& other) const {
+        return *p1 == *other.p1 && *p2 == *other.p2 && *p3 == *other.p3 && *p4 == *other.p4;
+    }
 };
 
 template <Scalar T>
-inline std::istream& operator>>(std::istream& is, Rhombus<T>& r) {
-    r.read(is);
+inline std::istream& operator>>(std::istream& is, Rhombus<T>& rh) {
+    rh.read(is);
     return is;
 }
