@@ -116,3 +116,78 @@ int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
+//
+// ---------- EXTRA RHOMBUS TESTS ----------
+//
+
+TEST(RhombusTest, NonCyclicRhombusThrows) {
+    // Ромб с равными сторонами, но не квадрат → НЕ вписывается
+    EXPECT_THROW(
+        Rhombus<D>(Point<D>{0,0}, Point<D>{2,1}, Point<D>{4,0}, Point<D>{2,-1}),
+        std::logic_error
+    );
+}
+
+TEST(RhombusTest, SquareIsCyclicAndAccepted) {
+    EXPECT_NO_THROW(
+        Rhombus<D>(Point<D>{0,0}, Point<D>{1,1}, Point<D>{2,0}, Point<D>{1,-1})
+    );
+}
+
+//
+// ---------- EXTRA TRAPEZOID TESTS ----------
+//
+
+TEST(TrapezoidTest, NonIsoscelesTrapezoidThrows) {
+    EXPECT_THROW(
+        Trapezoid<D>(Point<D>{0,0}, Point<D>{4,0}, Point<D>{4,2}, Point<D>{1,2}),
+        std::logic_error
+    );
+}
+
+
+
+TEST(TrapezoidTest, CyclicIsoscelesTrapezoidAccepted) {
+    EXPECT_NO_THROW(
+        Trapezoid<D>(Point<D>{0,0}, Point<D>{4,0}, Point<D>{3,1}, Point<D>{1,1})
+    );
+}
+
+//
+// ---------- GEOMETRY EXTRA TESTS ----------
+//
+
+TEST(GeometryTest, CyclicQuadrilateralIsAccepted) {
+    Trapezoid<D> t(Point<D>{0,0}, Point<D>{4,0}, Point<D>{3,1}, Point<D>{1,1});
+    EXPECT_GT(t.area(), 0.0);
+}
+
+TEST(GeometryTest, NonCyclicQuadrilateralFails) {
+    EXPECT_THROW(
+        Trapezoid<D>(Point<D>{0,0}, Point<D>{3,0}, Point<D>{2,2}, Point<D>{1,1}),
+        std::logic_error
+    );
+}
+
+//
+// ---------- FIGURE GENERAL TESTS ----------
+//
+
+TEST(FigureTest, ClonePreservesTypeAndArea) {
+    std::unique_ptr<Figure<D>> f =
+        std::make_unique<Rhombus<D>>(Point<D>{0,0}, Point<D>{1,1}, Point<D>{2,0}, Point<D>{1,-1});
+
+    auto c = f->clone();
+    EXPECT_NEAR(static_cast<double>(*c), f->area(), 1e-9);
+}
+
+TEST(FigureTest, AreasArePositive) {
+    Rectangle<D> R(Point<D>{0,0}, Point<D>{2,0}, Point<D>{2,1}, Point<D>{0,1});
+    Rhombus<D>   Rh(Point<D>{0,0}, Point<D>{1,1}, Point<D>{2,0}, Point<D>{1,-1});
+    Trapezoid<D> T(Point<D>{0,0}, Point<D>{3,0}, Point<D>{2,1}, Point<D>{1,1});
+
+    EXPECT_GT(R.area(), 0.0);
+    EXPECT_GT(Rh.area(), 0.0);
+    EXPECT_GT(T.area(), 0.0);
+}
